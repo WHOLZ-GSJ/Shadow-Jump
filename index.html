@@ -1,440 +1,49 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Firebase App (core) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Shadow Jump</title>
-
-<!-- PWA manifest -->
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#050218">
-
-<style>
-  /* --- Softer neon theme & layout --- */
-  :root{
-    --bg:#050216;
-    --panel:#0b0b16;
-    --neon: #00e6d6;       /* slightly softer cyan */
-    --neon-weak: rgba(0,230,214,0.18);
-    --neon-pink: #ff66d9;  /* neon pink */
-    --muted: #9bdce9;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,#040418 0%,#020010 100%);color:var(--neon);font-family:Inter,ui-sans-serif,system-ui,Roboto,Arial}
-  .app{min-height:100vh;display:flex;flex-direction:column}
-  header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.02)}
-  .title{font-weight:700;letter-spacing:1px}
-  .title .pink{color:var(--neon-pink)}
-  .top-controls{display:flex;gap:8px}
-  .icon-btn{background:transparent;border:1px solid rgba(255,255,255,0.03);padding:8px;border-radius:8px;color:var(--neon);cursor:pointer}
-  main.stage{display:flex;gap:18px;align-items:flex-start;justify-content:center;padding:18px;flex:1;flex-wrap:wrap}
-  .game-wrap{position:relative}
-  canvas{border-radius:10px;border:2px solid rgba(0,0,0,0.2);background:radial-gradient(circle at 50% 12%, rgba(0,0,0,0.08), transparent 25%);display:block;max-width:100%}
-  .hud{position:absolute;top:14px;left:14px;display:flex;gap:10px;font-family:monospace}
-  .hud .box{background:rgba(0,0,0,0.35);padding:6px 10px;border-radius:8px;border:1px solid var(--neon-weak)}
-  .controls-right{position:absolute;top:14px;right:14px;display:flex;gap:8px}
-  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:auto}
-  .menu{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid var(--neon-weak);min-width:260px;text-align:center;backdrop-filter:blur(6px)}
-  .big-btn{padding:10px 18px;border-radius:12px;border:2px solid var(--neon);background:transparent;color:var(--neon);cursor:pointer;font-weight:700}
-  .big-btn:hover{background:var(--neon);color:#081018}
-  .small{padding:6px 10px;border-radius:8px;border:1px solid var(--neon-weak);background:transparent;color:var(--neon);cursor:pointer}
-  .panel{width:320px;background:var(--panel);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
-  .panel h3{color:var(--neon-pink);margin:6px 0 8px 0}
-  .muted{color:var(--muted);font-size:13px}
-  footer{padding:12px;text-align:center;color:rgba(255,255,255,0.25);font-size:12px}
-  .hidden{display:none}
-  input[type="text"], select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--neon)}
-  ol{padding-left:18px;margin:6px 0;color:var(--muted)}
-  .leader-rows{display:flex;gap:8px;align-items:center;justify-content:space-between}
-  @media(max-width:900px){
-    main.stage{flex-direction:column;align-items:center}
-    .panel{width:92%}
-  }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Shadow Jump+ Levels</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="app">
   <header>
-    <div class="title">Shadow <span class="pink">Jump </span></div>
+    <div class="title">Shadow <span class="pink">Jump+</span> <span class="level-label" id="levelLabel"></span></div>
     <div class="top-controls">
-      <button id="installBtn" class="icon-btn" title="Install as app">📲 Install</button>
-      <button id="shareBtn" class="icon-btn" title="Share score">🔗 Share</button>
-      <button id="muteBtn" class="icon-btn" title="Toggle Sound">🔊</button>
+      <button id="muteBtn" class="icon-btn" title="Sound">🔊</button>
+      <button id="musicBtn" class="icon-btn" title="Music">🎵</button>
+      <button id="pauseBtn" class="icon-btn" title="Pause">⏸️</button>
     </div>
   </header>
-
   <main class="stage">
     <div class="game-wrap">
-      <canvas id="game" width="480" height="640" aria-label="Shadow Jump neon game"></canvas>
-
+      <canvas id="game" width="480" height="640"></canvas>
       <div class="hud">
         <div class="box">Score: <strong id="score">0</strong></div>
         <div class="box">Best: <strong id="best">0</strong></div>
       </div>
-
-      <div class="controls-right">
-        <button id="pauseBtn" class="small">⏸️ P</button>
-      </div>
-
       <div id="overlay" class="overlay">
-        <div class="menu">
-          <h2>Shadow <span style="color:var(--neon-pink)">Jump </span></h2>
-          <p class="muted">Tap / Click / Space to flap — avoid the pipes</p>
-          <div style="margin-top:12px;">
-            <button id="start" class="big-btn">Start</button>
+        <div class="menu" id="menu-content">
+          <h2>Shadow <span style="color:var(--neon-pink)">Jump+</span></h2>
+          <p class="muted">Choose your level:</p>
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px;">
+            <button class="big-btn level-btn" data-level="1">Level 1 (Easy)</button>
+            <button class="big-btn level-btn" data-level="2">Level 2 (Medium)</button>
+            <button class="big-btn level-btn" data-level="3">Level 3 (Hard)</button>
+            <button class="big-btn level-btn" data-level="4">Level 4 (Impossible)</button>
           </div>
-          <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
-            <button id="how" class="small">How to</button>
-            <button id="leaderboard" class="small">World Board</button>
-            <button id="settingsBtn" class="small">Settings</button>
+          <div style="margin-top:15px;">
+            <button id="how" class="small">How to Play</button>
           </div>
         </div>
       </div>
     </div>
-
-    <aside class="panel" id="sidePanel">
-      <h3>World Leaderboard</h3>
-      <label>Filter country:
-        <select id="countryFilter">
-          <option value="all">All Countries</option>
-          <option value="IN">India</option>
-          <option value="US">USA</option>
-          <option value="BR">Brazil</option>
-          <option value="RU">Russia</option>
-          <option value="CN">China</option>
-          <option value="JP">Japan</option>
-          <option value="DE">Germany</option>
-        </select>
-      </label>
-      <div style="margin-top:8px">
-        <ol id="worldList"></ol>
-      </div>
-
-      <h3 style="margin-top:12px">Your Score</h3>
-      <div class="muted">Current: <strong id="currScore">0</strong></div>
-      <div class="muted">Your Best: <strong id="yourBest">0</strong></div>
-      <div style="margin-top:8px" class="leader-rows">
-        <input id="nameInput" type="text" placeholder="Your name (max 12)"/>
-        <button id="submitScore" class="small">Submit</button>
-      </div>
-      <p class="muted" style="margin-top:10px;font-size:12px">Note: World leaderboard is simulated locally. Submitting stores to your browser.</p>
-    </aside>
   </main>
-
-  <footer>Made for fun — install as PWA to play offline. Want a real online leaderboard? I can give server code next.</footer>
+  <footer>
+    Play & challenge yourself! <span class="muted">Multi-level Flappy game for mobile and desktop.</span>
+  </footer>
 </div>
-
-<!-- Service Worker registration -->
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(()=>{/*ignore*/});
-}
-</script>
-
-<!-- GAME + Leaderboard JS -->
-<script>
-/* ========== CONFIG & STATE ========== */
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
-let W = 480, H = 640;
-let DPR = Math.max(1, window.devicePixelRatio || 1);
-function resize() {
-  const maxW = Math.min(window.innerWidth - 36, 720);
-  const scale = Math.min(1, maxW / W);
-  canvas.width = Math.round(W * DPR * scale);
-  canvas.height = Math.round(H * DPR * scale);
-  canvas.style.width = (W*scale) + 'px';
-  canvas.style.height = (H*scale) + 'px';
-  ctx.setTransform(DPR*scale,0,0,DPR*scale,0,0);
-}
-resize(); window.addEventListener('resize', resize);
-
-/* UI */
-const overlay = document.getElementById('overlay');
-const startBtn = document.getElementById('start');
-const howBtn = document.getElementById('how');
-const leaderboardBtn = document.getElementById('leaderboard');
-const settingsBtn = document.getElementById('settingsBtn');
-const scoreEl = document.getElementById('score');
-const bestEl = document.getElementById('best');
-const currScoreEl = document.getElementById('currScore');
-const yourBestEl = document.getElementById('yourBest');
-const nameInput = document.getElementById('nameInput');
-const submitBtn = document.getElementById('submitScore');
-const worldList = document.getElementById('worldList');
-const countryFilter = document.getElementById('countryFilter');
-const muteBtn = document.getElementById('muteBtn');
-const shareBtn = document.getElementById('shareBtn');
-const installBtn = document.getElementById('installBtn');
-const pauseBtn = document.getElementById('pauseBtn');
-
-let best = Number(localStorage.getItem('flappy_best')||0);
-bestEl.textContent = best;
-yourBestEl.textContent = best;
-let running=false, paused=false;
-
-/* game state */
-let state = { bird:null, pipes:[], gravity:0.52, flap:-9.2, pipeW:60, gap:130, speed:2.4, frame:0, score:0, gameOver:false };
-
-/* Audio */
-let soundOn = true;
-let audioCtx, padOsc;
-function ensureAudio(){ if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
-function startPad(){ if(!soundOn) return; ensureAudio(); stopPad(); padOsc = audioCtx.createOscillator(); const g = audioCtx.createGain(); padOsc.type='sawtooth'; padOsc.frequency.value=110; g.gain.value=0.02; const filter = audioCtx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=750; padOsc.connect(filter); filter.connect(g); g.connect(audioCtx.destination); padOsc.start(); }
-function stopPad(){ try{ padOsc && padOsc.stop(); }catch(e){} padOsc=null; }
-function flapSound(){ if(!soundOn) return; ensureAudio(); const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='square'; o.frequency.value=900; g.gain.value=0.05; o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.06); }
-function pointSound(){ if(!soundOn) return; ensureAudio(); const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sine'; o.frequency.value=620; g.gain.value=0.03; o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.08); }
-function crashSound(){ if(!soundOn) return; ensureAudio(); const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sawtooth'; o.frequency.value=80; g.gain.value=0.18; o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.18); }
-
-/* helper */
-function clamp(a,b,c){return Math.max(b,Math.min(a,c));}
-function circleRect(cx,cy,r,rx,ry,rw,rh){ const closestX = clamp(cx,rx,rx+rw); const closestY = clamp(cy,ry,ry+rh); const dx = cx-closestX, dy = cy-closestY; return (dx*dx+dy*dy) < r*r; }
-
-/* ========== Leaderboard (simulated global) ========== */
-const SAMPLE_GLOBAL = [
-  {name:'Zero', score:180, country:'US'},
-  {name:'Neo', score:167, country:'IN'},
-  {name:'Sky', score:150, country:'BR'},
-  {name:'Luna', score:142, country:'JP'},
-  {name:'Bolt', score:136, country:'DE'},
-  {name:'Rex', score:128, country:'RU'},
-  {name:'Maya', score:120, country:'IN'},
-  {name:'Ava', score:115, country:'US'},
-];
-
-function getGlobal(){
-  try{
-    const g = JSON.parse(localStorage.getItem('flappy_global')||'null');
-    if(!g){ localStorage.setItem('flappy_global', JSON.stringify(SAMPLE_GLOBAL)); return SAMPLE_GLOBAL.slice(); }
-    return g;
-  }catch(e){ localStorage.setItem('flappy_global', JSON.stringify(SAMPLE_GLOBAL)); return SAMPLE_GLOBAL.slice(); }
-}
-function saveGlobal(list){
-  localStorage.setItem('flappy_global', JSON.stringify(list.slice(0,200)));
-}
-
-/* render world list */
-function renderWorld(filter='all'){
-  const list = getGlobal().slice().sort((a,b)=>b.score-a.score);
-  const filtered = filter==='all' ? list : list.filter(i=>i.country===filter);
-  worldList.innerHTML = '';
-  (filtered.slice(0,10)).forEach((p,idx)=>{
-    const li = document.createElement('li');
-    li.innerHTML = `<strong>#${idx+1} ${p.name}</strong> — ${p.score} <span style="float:right;color:var(--muted)">${p.country}</span>`;
-    worldList.appendChild(li);
-  });
-}
-
-/* submit score to global (local simulation) */
-function submitToGlobal(name,score,country='IN'){
-  const list = getGlobal();
-  list.push({name,score,country});
-  list.sort((a,b)=>b.score-a.score);
-  saveGlobal(list);
-  renderWorld(countryFilter.value);
-}
-
-/* ========== GAME FUNCTIONS ========== */
-function reset(){
-  state = {
-    bird: { x: W*0.28, y: H/2, r: Math.max(10, Math.round(W*0.03)), vy:0 },
-    pipes: [], gravity:0.55, flap:-9.9, pipeW:60, gap:140, speed:3.4, frame:2, score:0, gameOver:false
-  };
-  // small difficulty scaling from best
-  if(best >= 50) state.speed += 1.4;
-  if(best >= 100) state.speed += 0.4;
-  updateHUD();
-}
-
-function spawn(){
-  const topH = 60 + Math.random() * (H - state.gap - 100);
-  state.pipes.push({x:W + state.pipeW, top: Math.round(topH), passed:false});
-}
-
-function update(){
-  if(!running || paused || state.gameOver) return;
-  state.frame++;
-  if(state.frame % Math.max(60, Math.round(120 - state.speed*20)) === 0) spawn();
-
-  // move pipes
-  for(const p of state.pipes) p.x -= state.speed;
-  state.pipes = state.pipes.filter(p=>p.x + state.pipeW > -400);
-
-  // physics
-  state.bird.vy += state.gravity;
-  state.bird.y += state.bird.vy;
-
-  // floor / ceiling
-  if(state.bird.y + state.bird.r > H - 9){
-    state.bird.y = H - 9 - state.bird.r; die();
-  }
-  if(state.bird.y - state.bird.r < 9){
-    state.bird.y = 9 + state.bird.r; state.bird.vy = 0;
-  }
-
-  // pipes collision & scoring
-  for(const p of state.pipes){
-    if(circleRect(state.bird.x,state.bird.y,state.bird.r,p.x,0,state.pipeW,p.top)) die();
-    if(circleRect(state.bird.x,state.bird.y,state.bird.r,p.x,p.top + state.gap,state.pipeW,H - p.top - state.gap - 9)) die();
-
-    if(!p.passed && (p.x + state.pipeW) < state.bird.x){
-      p.passed = true;
-      state.score++;
-      pointSound();
-      if(state.score > best){ best = state.score; localStorage.setItem('flappy_best', String(best)); bestEl.textContent = best; yourBestEl.textContent = best; }
-      // mild speed up
-      if(state.score % 10 === 0) state.speed += 0.15;
-    }
-  }
-
-  updateHUD();
-}
-
-function die(){
-  if(state.gameOver) return;
-  state.gameOver = true;
-  running=false;
-  crashSound();
-  // show overlay with options
-  setTimeout(()=>{
-    overlay.style.display = 'flex';
-    overlay.querySelector('.menu').innerHTML = `
-      <h2>💀 Game Over</h2>
-      <p class="muted">Score: <strong>${state.score}</strong></p>
-      <p class="muted">Best: <strong>${best}</strong></p>
-      <div style="margin-top:12px;">
-        <button id="restartBtn" class="big-btn">Restart</button>
-        <button id="menuBtn" class="small">Menu</button>
-      </div>
-      <div style="margin-top:10px;">
-        <button id="saveBtn" class="small">Save to World Board</button>
-      </div>
-    `;
-    document.getElementById('restartBtn').onclick = ()=>{ overlay.style.display='none'; start(); };
-    document.getElementById('menuBtn').onclick = ()=>{ location.reload(); };
-    document.getElementById('saveBtn').onclick = ()=>{ openSideForSave(); };
-  },300);
-}
-
-function render(){
-  // background gradient softer neon
-  const bg = ctx.createLinearGradient(0,0,0,H);
-  bg.addColorStop(0,'#050216'); bg.addColorStop(1,'#020014');
-  ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
-
-  // subtle grid lines
-  ctx.save(); ctx.globalAlpha = 0.04; ctx.strokeStyle = '#00e6d6';
-  for(let y=0;y<H;y+=12){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
-  ctx.restore();
-
-  // ground
-  ctx.fillStyle = '#030316'; ctx.fillRect(0,H-8,W,8);
-  ctx.strokeStyle = 'rgba(0,230,214,0.55)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0,H-8); ctx.lineTo(W,H-8); ctx.stroke();
-
-  // pipes (softer neon glow)
-  for(const p of state.pipes){
-    ctx.shadowColor = 'rgba(0,230,214,0.9)'; ctx.shadowBlur = 14;
-    ctx.fillStyle = '#00e6d6'; ctx.fillRect(p.x,0,state.pipeW,p.top);
-    ctx.fillRect(p.x,p.top + state.gap, state.pipeW, H - p.top - state.gap - 8);
-    ctx.shadowBlur = 0;
-  }
-
-  // bird (neon pink)
-  ctx.beginPath(); ctx.arc(state.bird.x, state.bird.y, state.bird.r, 0, Math.PI*2);
-  ctx.fillStyle = '#ff66d9'; ctx.shadowColor = 'rgba(255,102,217,0.95)'; ctx.shadowBlur = 18; ctx.fill();
-  ctx.shadowBlur = 0;
-
-  // center score
-  ctx.font = "28px monospace"; ctx.fillStyle = 'rgba(0,230,214,0.95)'; ctx.textAlign='center';
-  ctx.fillText(state.score, W/2, 44);
-}
-
-/* main loop */
-let raf=0;
-function loop(){
-  update();
-  render();
-  if(running) raf = requestAnimationFrame(loop);
-}
-
-/* controls */
-function flap(){
-  if(!running && !state.gameOver){ start(); return; }
-  if(state.gameOver) return;
-  state.bird.vy = state.flap;
-  flapSound();
-}
-
-/* start / pause / reset */
-function start(){
-  try{ if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }catch(e){}
-  reset();
-  running = true; paused=false;
-  overlay.style.display = 'none';
-  startPad();
-  raf = requestAnimationFrame(loop);
-}
-function togglePause(){
-  if(state.gameOver) return;
-  paused = !paused;
-  if(paused){ pauseBtn.textContent = '▶️'; stopPad(); } else { pauseBtn.textContent = '⏸️ P'; if(soundOn) startPad(); raf = requestAnimationFrame(loop); }
-}
-function updateHUD(){
-  scoreEl.textContent = state.score;
-  currScoreEl.textContent = state.score;
-  bestEl.textContent = best;
-  yourBestEl.textContent = best;
-}
-
-/* inputs */
-window.addEventListener('keydown', (e)=>{ if(e.code==='Space'){ e.preventDefault(); flap(); } if(e.code==='KeyP') togglePause(); });
-canvas.addEventListener('mousedown', flap); canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); flap(); }, {passive:false});
-
-/* UI events */
-startBtn.onclick = ()=>{ overlay.style.display='none'; start(); }
-howBtn.onclick = ()=>{ alert('Controls: Space / Tap / Click to flap. P to pause. Submit score to world board from the right panel.'); }
-leaderboardBtn.onclick = ()=>{ renderWorld(countryFilter.value); document.getElementById('sidePanel').scrollIntoView({behavior:'smooth'}); }
-settingsBtn.onclick = ()=>{ alert('Settings are simple: sound toggle at top, install via install button.'); }
-
-countryFilter.onchange = ()=> renderWorld(countryFilter.value);
-submitBtn.onclick = ()=> {
-  const name = (nameInput.value || 'Player').trim().slice(0,12);
-  if(!name) return alert('Type a name');
-  submitToGlobal(name, state.score, countryFilter.value==='all' ? 'IN' : countryFilter.value);
-  alert('Score submitted locally to World Board!');
-};
-muteBtn.onclick = ()=>{ soundOn = !soundOn; muteBtn.textContent = soundOn ? '🔊' : '🔇'; if(!soundOn) stopPad(); else if(running) startPad(); }
-shareBtn.onclick = async ()=>{
-  const text = `I scored ${state.score} on Flappy Bird Neon+! My best: ${best}. Can you beat me?`;
-  if(navigator.share){ try{ await navigator.share({title:'Flappy Bird Neon+', text}); }catch(e){} } else { prompt('Copy and share:', text); }
-};
-installBtn.onclick = ()=>{ if(window.deferredPrompt){ window.deferredPrompt.prompt(); window.deferredPrompt.userChoice.then(()=>{ window.deferredPrompt = null; installBtn.style.display='none'; }); } else alert('Install not supported on this browser. Use Add to Home Screen on mobile.'); }
-pauseBtn.onclick = togglePause;
-
-function openSideForSave(){
-  document.getElementById('sidePanel').scrollIntoView({behavior:'smooth'});
-  nameInput.value = (localStorage.getItem('flappy_name')||'').slice(0,12);
-  // show user to submit
-}
-
-/* init */
-reset(); render();
-renderWorld();
-
-/* PWA: capture install prompt */
-let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault(); deferredPrompt = e; window.deferredPrompt = e; installBtn.style.display='inline-block';
-});
-</script>
-
-<!-- PWA manifest (inline alternative): save as file manifest.webmanifest if hosting -->
-<script>
-/* If user saved single-file, provide manifest creation helper - but we also try to register sw.js below.
-   For full PWA, create a file named manifest.webmanifest with contents matching below. */
-</script>
+<script src="game.js"></script>
 </body>
 </html>
