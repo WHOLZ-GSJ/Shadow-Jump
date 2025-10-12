@@ -1,0 +1,38 @@
+:root {
+  --bg: #09082a;
+  --panel: #18153a;
+  --neon: #00fff2;
+  --neon-pink: #ff3ea9;
+  --muted: #a5eaff;
+  --radius: 16px;
+  --shadow: 0 0 18px var(--neon);
+}
+* { box-sizing: border-box;}
+body, html { height: 100%; margin: 0; font-family: 'Inter', 'Roboto', Arial, sans-serif; background: radial-gradient(circle at 60% 20%, #0b0a2b 0%, #09082a 100%); color: var(--neon);}
+.app { min-height: 100vh; display: flex; flex-direction: column;}
+header { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; background: var(--panel); box-shadow: var(--shadow);}
+.title { font-size: 2em; font-weight: 800; letter-spacing: 2px;}
+.pink { color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink);}
+.level-label { font-size: 0.8em; color: var(--muted); margin-left: 8px;}
+.top-controls { display: flex; gap: 12px;}
+.icon-btn { border: none; background: var(--panel); color: var(--neon); box-shadow: 0 0 6px var(--neon-weak); padding: 10px; border-radius: var(--radius); font-size: 1.2em; cursor: pointer; transition: background 0.2s;}
+.icon-btn:active, .icon-btn:focus { background: var(--neon-weak); outline: none;}
+.main.stage { display: flex; flex-wrap: wrap; gap: 24px; padding: 24px; flex: 1; justify-content: center; align-items: flex-start;}
+.game-wrap { position: relative;}
+canvas { border-radius: var(--radius); background: linear-gradient(135deg, #101042 60%, #1a1853 100%); box-shadow: 0 0 30px var(--neon); max-width: 100%; border: 2px solid var(--neon);}
+.hud { position: absolute; top: 20px; left: 20px; display: flex; gap: 14px; font-size: 1.1em; font-family: monospace;}
+.hud .box { background: rgba(0,0,0,0.42); padding: 8px 14px; border-radius: 10px; border: 1px solid var(--neon); box-shadow: 0 0 8px var(--neon);}
+.overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: auto; z-index: 2;}
+.menu { background: linear-gradient(180deg, rgba(0,255,231,0.11), rgba(255,62,169,0.09)); padding: 24px 30px; border-radius: var(--radius); border: 2px solid var(--neon-pink); min-width: 270px; text-align: center; box-shadow: 0 0 30px var(--neon-pink); backdrop-filter: blur(10px);}
+.big-btn { padding: 12px 28px; border-radius: 14px; border: 2px solid var(--neon); background: transparent; color: var(--neon); font-size: 1.09em; font-weight: 700; cursor: pointer; margin: 4px 0; transition: background 0.2s, color 0.2s; box-shadow: var(--shadow);}
+.big-btn:hover { background: var(--neon); color: #18153a;}
+.small { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--neon-pink); background: transparent; color: var(--neon-pink); cursor: pointer; margin: 2px;}
+footer { padding: 16px; text-align: center; color: rgba(255,255,255,0.22); font-size: 13px;}
+.muted { color: var(--muted);}
+.hidden { display: none !important;}
+@media (max-width: 900px) {
+  .main.stage { flex-direction: column; align-items: center;}
+}
+@media (max-width: 600px) {
+  header { flex-direction: column; gap: 7px; padding: 12px;}
+}
