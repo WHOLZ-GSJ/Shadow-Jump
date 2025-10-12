@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- Firebase App (core) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Shadow Jump</title>
@@ -238,16 +241,16 @@ function submitToGlobal(name,score,country='IN'){
 function reset(){
   state = {
     bird: { x: W*0.28, y: H/2, r: Math.max(10, Math.round(W*0.03)), vy:0 },
-    pipes: [], gravity:0.52, flap:-9.2, pipeW:60, gap:130, speed:2.4, frame:0, score:0, gameOver:false
+    pipes: [], gravity:0.55, flap:-9.9, pipeW:60, gap:140, speed:3.4, frame:2, score:0, gameOver:false
   };
   // small difficulty scaling from best
-  if(best >= 50) state.speed += 0.4;
+  if(best >= 50) state.speed += 1.4;
   if(best >= 100) state.speed += 0.4;
   updateHUD();
 }
 
 function spawn(){
-  const topH = 60 + Math.random() * (H - state.gap - 160);
+  const topH = 60 + Math.random() * (H - state.gap - 100);
   state.pipes.push({x:W + state.pipeW, top: Math.round(topH), passed:false});
 }
 
@@ -258,24 +261,24 @@ function update(){
 
   // move pipes
   for(const p of state.pipes) p.x -= state.speed;
-  state.pipes = state.pipes.filter(p=>p.x + state.pipeW > -20);
+  state.pipes = state.pipes.filter(p=>p.x + state.pipeW > -400);
 
   // physics
   state.bird.vy += state.gravity;
   state.bird.y += state.bird.vy;
 
   // floor / ceiling
-  if(state.bird.y + state.bird.r > H - 8){
-    state.bird.y = H - 8 - state.bird.r; die();
+  if(state.bird.y + state.bird.r > H - 9){
+    state.bird.y = H - 9 - state.bird.r; die();
   }
-  if(state.bird.y - state.bird.r < 8){
-    state.bird.y = 8 + state.bird.r; state.bird.vy = 0;
+  if(state.bird.y - state.bird.r < 9){
+    state.bird.y = 9 + state.bird.r; state.bird.vy = 0;
   }
 
   // pipes collision & scoring
   for(const p of state.pipes){
     if(circleRect(state.bird.x,state.bird.y,state.bird.r,p.x,0,state.pipeW,p.top)) die();
-    if(circleRect(state.bird.x,state.bird.y,state.bird.r,p.x,p.top + state.gap,state.pipeW,H - p.top - state.gap - 8)) die();
+    if(circleRect(state.bird.x,state.bird.y,state.bird.r,p.x,p.top + state.gap,state.pipeW,H - p.top - state.gap - 9)) die();
 
     if(!p.passed && (p.x + state.pipeW) < state.bird.x){
       p.passed = true;
