@@ -1,11 +1,21 @@
 {
-  "background_color": "#ffffff",
-  "dir": "ltr",
+  "name": "Shadow Jump+",
+  "short_name": "ShadowJump",
+  "start_url": ".",
   "display": "standalone",
-  "name": "wholz-gsj.github",
-  "orientation": "any",
-  "scope": "/",
-  "short_name": "wholz-gsj.github",
-  "start_url": "/",
-  "theme_color": "#ffffff"
+  "background_color": "#09082a",
+  "theme_color": "#09082a",
+  "description": "Neon Flappy game with leaderboard, music and 3D effects.",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
