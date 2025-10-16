@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="manifest" href="manifest.webmanifest">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Shadow Jump+ Levels</title>
+  <title>Shadow Jump+ Levels & Leaderboard</title>
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="app">
   <header>
-    <div class="title">Shadow <span class="pink">Jump+</span> <span class="level-label" id="levelLabel"></span></div>
+    <div class="title">Shadow <span class="pink">Jump+</span></div>
     <div class="top-controls">
+      <button id="installBtn" class="icon-btn" title="Install as app">📲</button>
+      <button id="shareBtn" class="icon-btn" title="Share">🔗</button>
       <button id="muteBtn" class="icon-btn" title="Sound">🔊</button>
       <button id="musicBtn" class="icon-btn" title="Music">🎵</button>
-      <button id="pauseBtn" class="icon-btn" title="Pause">⏸️</button>
     </div>
   </header>
   <main class="stage">
@@ -23,28 +24,34 @@
       <div class="hud">
         <div class="box">Score: <strong id="score">0</strong></div>
         <div class="box">Best: <strong id="best">0</strong></div>
+        <div class="box">Level: <strong id="level">1</strong></div>
       </div>
       <div id="overlay" class="overlay">
         <div class="menu" id="menu-content">
           <h2>Shadow <span style="color:var(--neon-pink)">Jump+</span></h2>
-          <p class="muted">Choose your level:</p>
-          <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px;">
-            <button class="big-btn level-btn" data-level="1">Level 1 (Easy)</button>
-            <button class="big-btn level-btn" data-level="2">Level 2 (Medium)</button>
-            <button class="big-btn level-btn" data-level="3">Level 3 (Hard)</button>
-            <button class="big-btn level-btn" data-level="4">Level 4 (Impossible)</button>
-          </div>
-          <div style="margin-top:15px;">
+          <p class="muted">Tap, Click, or Press Space to Flap<br>Avoid the neon pipes!</p>
+          <input id="playerName" type="text" maxlength="12" placeholder="Your Name">
+          <button id="start" class="big-btn">Start Game</button>
+          <div style="margin-top:20px;">
             <button id="how" class="small">How to Play</button>
+            <button id="leaderboardBtn" class="small">Leaderboard</button>
           </div>
         </div>
       </div>
     </div>
+    <aside class="panel" id="sidePanel">
+      <h3>World Leaderboard</h3>
+      <ol id="worldList" class="world-list"></ol>
+    </aside>
   </main>
   <footer>
-    Play & challenge yourself! <span class="muted">Multi-level Flappy game for mobile and desktop.</span>
+    Made with ❤️ | Share your score and challenge friends!
+    <span class="muted">Marketing tip: Use the share button to spread the game.</span>
   </footer>
 </div>
+<audio id="bgMusic" src="assets/music.mp3" loop preload="auto"></audio>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="game.js"></script>
 </body>
 </html>
