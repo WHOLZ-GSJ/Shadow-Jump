@@ -90,11 +90,11 @@ function sanitizePlayerName(name) {
 
 // ===== LEVEL SYSTEM =====
 const LEVELS = [
-  { score: 0,    speed: 2.5, gap: 140, gravity: 0.52, name: 'Easy' },
-  { score: 10,   speed: 2.9, gap: 130, gravity: 0.56, name: 'Medium' },
-  { score: 20,   speed: 3.3, gap: 120, gravity: 0.60, name: 'Hard' },
-  { score: 35,   speed: 3.7, gap: 110, gravity: 0.65, name: 'Expert' },
-  { score: 50,   speed: 4.1, gap: 98,  gravity: 0.72, name: 'Insane' }
+  {score:0,    speed:2.5, gap:170, gravity:0.52, name:'Easy'},
+  {score:10,   speed:2.9, gap:160, gravity:0.56, name:'Medium'},
+  {score:20,   speed:3.3, gap:150, gravity:0.60, name:'Hard'},
+  {score:35,   speed:3.7, gap:140, gravity:0.65, name:'Expert'},
+  {score:50,   speed:4.1, gap:130, gravity:0.72, name:'Insane'}
 ];
 
 // ===== GAME STATE =====
